@@ -52,24 +52,32 @@ export async function fetchWithRetry(
   options: FetchWithRetryOptions = {},
 ): Promise<Response> {
   const {
-    attempts = 4,
     baseDelayMs = 500,
     maxDelayMs = 8_000,
     timeoutMs = 120_000,
     sleep = defaultSleep,
     fetchImpl = fetch,
   } = options;
+  // Always make at least one request, whatever the caller passed.
+  const attempts = Math.max(1, Math.floor(options.attempts ?? 4));
 
   let lastError: unknown;
   for (let attempt = 0; attempt < attempts; attempt++) {
     let response: Response;
     try {
+      const timeoutSignal = AbortSignal.timeout(timeoutMs);
       response = await fetchImpl(url, {
         ...init,
-        signal: AbortSignal.timeout(timeoutMs),
+        signal: init.signal
+          ? AbortSignal.any([init.signal, timeoutSignal])
+          : timeoutSignal,
       });
     } catch (err) {
       lastError = err;
+      // Caller-initiated aborts are intentional; don't retry them.
+      if (init.signal?.aborted) {
+        throw err;
+      }
       if (attempt < attempts - 1) {
         await sleep(retryDelayMs(attempt, null, baseDelayMs, maxDelayMs));
         continue;
@@ -80,6 +88,9 @@ export async function fetchWithRetry(
     if (!isRetryableStatus(response.status) || attempt === attempts - 1) {
       return response;
     }
+    // Release the connection before retrying; an unconsumed body can pin
+    // sockets in undici.
+    await response.body?.cancel().catch(() => {});
     await sleep(
       retryDelayMs(
         attempt,

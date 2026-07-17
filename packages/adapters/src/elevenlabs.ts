@@ -103,7 +103,13 @@ export class ElevenLabsMusicAdapter implements AudioAdapter {
       throw new AdapterError("eleven music returned an empty body", this.name);
     }
 
-    const trackId = res.headers.get("request-id") ?? randomUUID();
+    // request-id is provider-controlled and ends up in file paths (here and
+    // in the CLI); only accept a conservative charset, else mint our own.
+    const requestId = res.headers.get("request-id");
+    const trackId =
+      requestId && /^[A-Za-z0-9_-]{1,128}$/.test(requestId)
+        ? requestId
+        : randomUUID();
     const dir = await mkdtemp(join(tmpdir(), "webplay-elevenlabs-"));
     const filePath = join(dir, `${trackId}.mp3`);
     await writeFile(filePath, audio);
@@ -121,6 +127,7 @@ export class ElevenLabsMusicAdapter implements AudioAdapter {
         bytes: audio.length,
         genre: params.genre,
         mood: params.mood ?? null,
+        rawRequestId: requestId,
       },
     };
   }

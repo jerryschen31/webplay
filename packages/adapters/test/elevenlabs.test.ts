@@ -135,3 +135,28 @@ describe("ElevenLabsMusicAdapter", () => {
     expect(await adapterWith(bad).isHealthy()).toBe(false);
   });
 });
+
+describe("ElevenLabsMusicAdapter request-id hardening", () => {
+  it("replaces a path-traversal request-id with a safe generated id", async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response(FAKE_MP3, {
+          status: 200,
+          headers: { "request-id": "../../etc/passwd" },
+        }),
+    ) as unknown as typeof fetch;
+
+    const track = await adapterWith(fetchImpl).generateTrack({
+      genre: "lofi",
+      durationSec: 30,
+      instrumental: true,
+    });
+
+    expect(track.providerTrackId).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(track.providerTrackId).not.toContain("..");
+    expect(track.audioUrl).not.toContain("etc");
+    expect(track.metadata.rawRequestId).toBe("../../etc/passwd");
+    const written = await readFile(track.audioUrl);
+    expect(written.equals(FAKE_MP3)).toBe(true);
+  });
+});
