@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.10,<3.12"
 # dependencies = [
 #   "stable-audio-tools>=0.0.19",
 #   "torch>=2.3",
