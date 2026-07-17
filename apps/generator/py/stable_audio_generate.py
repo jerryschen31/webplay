@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#   "stable-audio-tools>=1.0.0",
+#   "stable-audio-tools>=0.0.19",
 #   "torch>=2.3",
 #   "torchaudio>=2.3",
 #   "einops",
