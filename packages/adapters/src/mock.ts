@@ -1,11 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { randomUUID } from "node:crypto";
 import type {
   AudioAdapter,
-  GenerateTrackParams,
   GeneratedTrack,
+  GenerateTrackParams,
 } from "./types.js";
 
 export interface MockAdapterOptions {
@@ -43,7 +43,9 @@ export class MockAdapter implements AudioAdapter {
   async generateTrack(params: GenerateTrackParams): Promise<GeneratedTrack> {
     if (this.failuresRemaining > 0) {
       this.failuresRemaining -= 1;
-      throw new Error(`mock adapter forced failure (remaining: ${this.failuresRemaining})`);
+      throw new Error(
+        `mock adapter forced failure (remaining: ${this.failuresRemaining})`,
+      );
     }
 
     const wav = synthSineWav({

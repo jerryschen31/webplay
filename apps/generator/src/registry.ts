@@ -1,4 +1,4 @@
-import { MockAdapter, type AudioAdapter } from "@webplay/adapters";
+import { type AudioAdapter, MockAdapter } from "@webplay/adapters";
 
 export type AdapterName = "mock";
 

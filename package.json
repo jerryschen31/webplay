@@ -10,12 +10,16 @@
   "scripts": {
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
     "test": "pnpm -r test",
     "generate": "pnpm --filter @webplay/generator run cli"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.4",
+    "@types/node": "^22.9.0",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.5",
-    "@types/node": "^22.9.0"
+    "vitest": "^2.1.5"
   }
 }

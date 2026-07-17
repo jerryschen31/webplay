@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { readFile, stat } from "node:fs/promises";
+import { describe, expect, it } from "vitest";
 import { MockAdapter, synthSineWav } from "../src/index.js";
 
 describe("MockAdapter", () => {
@@ -63,10 +63,18 @@ describe("MockAdapter", () => {
   it("simulates failures when configured", async () => {
     const adapter = new MockAdapter({ failNextN: 2 });
     await expect(
-      adapter.generateTrack({ genre: "lofi", durationSec: 1, instrumental: true }),
+      adapter.generateTrack({
+        genre: "lofi",
+        durationSec: 1,
+        instrumental: true,
+      }),
     ).rejects.toThrow(/forced failure/);
     await expect(
-      adapter.generateTrack({ genre: "lofi", durationSec: 1, instrumental: true }),
+      adapter.generateTrack({
+        genre: "lofi",
+        durationSec: 1,
+        instrumental: true,
+      }),
     ).rejects.toThrow(/forced failure/);
     // third call should succeed
     const track = await adapter.generateTrack({
@@ -78,7 +86,11 @@ describe("MockAdapter", () => {
   });
 
   it("synthSineWav produces expected byte length", () => {
-    const buf = synthSineWav({ durationSec: 1, sampleRate: 8000, frequencyHz: 440 });
+    const buf = synthSineWav({
+      durationSec: 1,
+      sampleRate: 8000,
+      frequencyHz: 440,
+    });
     expect(buf.length).toBe(44 + 8000 * 2);
   });
 });

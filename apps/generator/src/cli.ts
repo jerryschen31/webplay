@@ -1,7 +1,7 @@
-import { mkdir, copyFile } from "node:fs/promises";
+import { copyFile, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { getAdapter, KNOWN_ADAPTERS, type AdapterName } from "./registry.js";
+import { type AdapterName, getAdapter, KNOWN_ADAPTERS } from "./registry.js";
 
 interface CliArgs {
   provider: AdapterName;
@@ -91,7 +91,10 @@ async function main(): Promise<void> {
   const elapsedMs = Date.now() - startedAt;
 
   await mkdir(args.out, { recursive: true });
-  const dest = resolve(args.out, `${track.providerId}-${track.providerTrackId}.${track.format}`);
+  const dest = resolve(
+    args.out,
+    `${track.providerId}-${track.providerTrackId}.${track.format}`,
+  );
   await copyFile(track.audioUrl, dest);
 
   console.log(
