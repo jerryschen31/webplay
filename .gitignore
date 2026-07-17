@@ -43,3 +43,8 @@ apps/generator/out/
 *.mp3
 *.aac
 *.flac
+
+# next.js / opennext
+.next/
+.open-next/
+.wrangler/
