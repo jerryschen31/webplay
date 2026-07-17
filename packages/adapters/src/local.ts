@@ -1,0 +1,222 @@
+import { spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import {
+  AdapterError,
+  type AudioAdapter,
+  type AudioFormat,
+  type GeneratedTrack,
+  type GenerateTrackParams,
+  type LicenseTerms,
+} from "./types.js";
+
+export interface ProcessResult {
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}
+
+export type ProcessRunner = (
+  command: string,
+  args: string[],
+  options: { timeoutMs: number },
+) => Promise<ProcessResult>;
+
+/** Spawn without a shell (argv only) and capture output. */
+export const spawnRunner: ProcessRunner = (command, args, { timeoutMs }) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: timeoutMs,
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("error", reject);
+    child.on("close", (code) => {
+      resolve({ exitCode: code ?? -1, stdout, stderr });
+    });
+  });
+
+/** JSON contract every generator script prints as its final stdout line. */
+export interface LocalScriptResult {
+  file: string;
+  durationSec: number;
+  sampleRate?: number;
+  model?: string;
+  [key: string]: unknown;
+}
+
+export interface LocalPythonAdapterConfig {
+  name: string;
+  /** Absolute path to the generator script. */
+  scriptPath: string;
+  licenseTerms: LicenseTerms;
+  /** argv inserted between `uv` and the script path (e.g. run --project X python). */
+  uvArgs?: string[];
+  /** Extra script argv derived from adapter-specific settings. */
+  extraArgs?: string[];
+  /** Model inference is slow; default 30 min per track. */
+  timeoutMs?: number;
+  format?: AudioFormat;
+  runner?: ProcessRunner;
+  uvBinary?: string;
+}
+
+/**
+ * LocalPythonAdapter — runs a Python generator script through `uv` as a
+ * subprocess. The script owns model loading/inference and prints a single
+ * JSON line (LocalScriptResult) as its last stdout line; audio lands in a
+ * temp dir we create. Zero marginal cost: the M4 does the work.
+ */
+export class LocalPythonAdapter implements AudioAdapter {
+  readonly name: string;
+  readonly costPerTrackUSD = 0;
+
+  private readonly config: Required<
+    Pick<LocalPythonAdapterConfig, "timeoutMs" | "format" | "uvBinary">
+  > &
+    LocalPythonAdapterConfig;
+  private readonly runner: ProcessRunner;
+
+  constructor(config: LocalPythonAdapterConfig) {
+    this.name = config.name;
+    this.config = {
+      timeoutMs: 30 * 60 * 1000,
+      format: "wav",
+      uvBinary: "uv",
+      ...config,
+    };
+    this.runner = config.runner ?? spawnRunner;
+  }
+
+  /**
+   * Cheap preflight: uv is installed and the script exists. Model weights
+   * download lazily on first generation, so they are not checked here.
+   */
+  async isHealthy(): Promise<boolean> {
+    if (!existsSync(this.config.scriptPath)) {
+      return false;
+    }
+    try {
+      const res = await this.runner(this.config.uvBinary, ["--version"], {
+        timeoutMs: 15_000,
+      });
+      return res.exitCode === 0;
+    } catch {
+      return false;
+    }
+  }
+
+  async generateTrack(params: GenerateTrackParams): Promise<GeneratedTrack> {
+    const outDir = await mkdtemp(join(tmpdir(), `webplay-${this.name}-`));
+    const prompt = params.prompt ?? buildLocalPrompt(params);
+    const args = [
+      ...(this.config.uvArgs ?? ["run"]),
+      this.config.scriptPath,
+      "--prompt",
+      prompt,
+      "--duration",
+      String(params.durationSec),
+      "--out-dir",
+      outDir,
+      ...(params.seed ? ["--seed", params.seed] : []),
+      ...(this.config.extraArgs ?? []),
+    ];
+
+    let result: ProcessResult;
+    try {
+      result = await this.runner(this.config.uvBinary, args, {
+        timeoutMs: this.config.timeoutMs,
+      });
+    } catch (err) {
+      throw new AdapterError(
+        `${this.name} subprocess failed to start: ${String(err)}`,
+        this.name,
+        err,
+      );
+    }
+
+    if (result.exitCode !== 0) {
+      throw new AdapterError(
+        `${this.name} generation failed (exit ${result.exitCode}): ${tail(result.stderr)}`,
+        this.name,
+      );
+    }
+
+    const parsed = parseScriptResult(result.stdout);
+    if (!parsed) {
+      throw new AdapterError(
+        `${this.name} produced no result JSON on stdout: ${tail(result.stdout)}`,
+        this.name,
+      );
+    }
+    if (!existsSync(parsed.file)) {
+      throw new AdapterError(
+        `${this.name} reported missing output file: ${parsed.file}`,
+        this.name,
+      );
+    }
+
+    return {
+      audioUrl: parsed.file,
+      format: this.config.format,
+      durationSec: parsed.durationSec,
+      providerId: this.name,
+      providerTrackId: randomUUID(),
+      licenseTerms: this.config.licenseTerms,
+      metadata: {
+        prompt,
+        genre: params.genre,
+        mood: params.mood ?? null,
+        script: this.config.scriptPath,
+        ...parsed,
+      },
+    };
+  }
+}
+
+/** Last JSON-parseable stdout line wins (models log noisily before it). */
+export function parseScriptResult(stdout: string): LocalScriptResult | null {
+  const lines = stdout.trim().split("\n").reverse();
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("{")) continue;
+    try {
+      const value = JSON.parse(trimmed) as LocalScriptResult;
+      if (
+        typeof value.file === "string" &&
+        typeof value.durationSec === "number"
+      ) {
+        return value;
+      }
+    } catch {
+      // keep scanning earlier lines
+    }
+  }
+  return null;
+}
+
+function buildLocalPrompt(params: GenerateTrackParams): string {
+  const parts = [
+    `${params.genre} music`,
+    params.mood ? `${params.mood} mood` : null,
+    params.bpm ? `${params.bpm[0]}-${params.bpm[1]} BPM` : null,
+    params.instrumental ? "instrumental" : null,
+    "loopable background track",
+  ];
+  return parts.filter(Boolean).join(", ");
+}
+
+function tail(text: string, chars = 500): string {
+  const trimmed = text.trim();
+  return trimmed.length > chars ? `…${trimmed.slice(-chars)}` : trimmed;
+}
