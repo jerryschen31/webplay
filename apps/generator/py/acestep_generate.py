@@ -26,6 +26,11 @@ def main() -> int:
     parser.add_argument("--seed", default=None)
     parser.add_argument("--variant", default="acestep-v15-turbo")
     parser.add_argument(
+        "--quantization",
+        default="int8_weight_only",
+        help='torchao quantization; pass "none" to disable (16GB M4 needs it)',
+    )
+    parser.add_argument(
         "--project-root",
         default=os.environ.get("ACESTEP_PROJECT_DIR"),
         help="ACE-Step checkout; the Node adapter always passes this explicitly",
@@ -49,6 +54,11 @@ def main() -> int:
         project_root=project_root,
         config_path=args.variant,
         device=device,
+        # 16GB unified memory can't hold DiT + VAE + text encoder at once;
+        # matches the repo's own defaults for the 16GB tier (gpu_config.py)
+        offload_to_cpu=True,
+        offload_dit_to_cpu=True,
+        quantization=None if args.quantization == "none" else args.quantization,
     )
 
     # The optional LM handler improves prompt adherence but needs a backend

@@ -51,3 +51,6 @@ apps/generator/out/
 
 # bench output
 bench-results/
+
+# runtime caches
+.cache/
