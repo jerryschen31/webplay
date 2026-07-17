@@ -8,6 +8,9 @@ on:
       - "pnpm-lock.yaml"
       - ".github/workflows/deploy-web.yml"
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-web
   cancel-in-progress: false
