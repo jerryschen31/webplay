@@ -32,6 +32,32 @@ describe("runBench", () => {
 });
 
 describe("toCsv", () => {
+  it("escapes embedded quotes per RFC 4180 and flattens newlines", () => {
+    const csv = toCsv({
+      provider: "mock",
+      runs: 1,
+      succeeded: 0,
+      failureRate: 1,
+      minMs: null,
+      meanMs: null,
+      maxMs: null,
+      totalCostUSD: 0,
+      results: [
+        {
+          run: 1,
+          ok: false,
+          elapsedMs: 5,
+          error: 'HTTP 402 {"detail":"paid_plan_required"}\nsecond line',
+        },
+      ],
+    });
+    const row = csv.split("\n")[1];
+    expect(row).toContain(
+      '"HTTP 402 {""detail"":""paid_plan_required""} second line"',
+    );
+    expect(row).not.toContain("\nsecond");
+  });
+
   it("emits one quoted row per run with errors flattened", async () => {
     const summary = await runBench(new MockAdapter({ failNextN: 1 }), {
       runs: 2,

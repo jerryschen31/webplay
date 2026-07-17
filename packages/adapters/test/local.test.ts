@@ -1,4 +1,4 @@
-import { writeFile } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
@@ -10,7 +10,8 @@ import {
 } from "../src/local.js";
 import { AdapterError } from "../src/types.js";
 
-const SCRIPT = join(tmpdir(), "webplay-test-script.py");
+const FIXTURE_DIR = await mkdtemp(join(tmpdir(), "webplay-local-test-"));
+const SCRIPT = join(FIXTURE_DIR, "script.py");
 await writeFile(SCRIPT, "# test fixture\n");
 
 function okRunner(result: Partial<ProcessResult> = {}): ProcessRunner {
@@ -52,7 +53,7 @@ describe("parseScriptResult", () => {
 
 describe("LocalPythonAdapter", () => {
   it("runs uv with argv (no shell) and returns the generated track", async () => {
-    const audioFile = join(tmpdir(), "webplay-test-out.wav");
+    const audioFile = join(FIXTURE_DIR, "out.wav");
     await writeFile(audioFile, "RIFF");
     const runner = vi.fn(async (cmd: string, args: string[]) => {
       expect(cmd).toBe("uv");

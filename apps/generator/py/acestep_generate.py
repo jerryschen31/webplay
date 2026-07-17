@@ -25,14 +25,23 @@ def main() -> int:
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--seed", default=None)
     parser.add_argument("--variant", default="acestep-v15-turbo")
+    parser.add_argument(
+        "--project-root",
+        default=os.environ.get("ACESTEP_PROJECT_DIR"),
+        help="ACE-Step checkout; the Node adapter always passes this explicitly",
+    )
     args = parser.parse_args()
+
+    if not args.project_root or not os.path.isdir(args.project_root):
+        print(f"invalid --project-root: {args.project_root!r}", file=sys.stderr)
+        return 2
 
     import torch
     from acestep.handler import AceStepHandler
     from acestep.inference import GenerationConfig, GenerationParams, generate_music
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
-    project_root = os.environ.get("ACESTEP_PROJECT_DIR", os.getcwd())
+    project_root = args.project_root
 
     started = time.time()
     dit_handler = AceStepHandler()

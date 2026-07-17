@@ -46,6 +46,9 @@ export function createAceStepAdapter(
     extraArgs: [
       "--variant",
       process.env.ACESTEP_VARIANT ?? "acestep-v15-turbo",
+      // explicit so the script never guesses from env/cwd
+      "--project-root",
+      projectDir,
     ],
     runner: options.runner,
     timeoutMs: options.timeoutMs,

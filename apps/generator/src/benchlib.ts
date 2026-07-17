@@ -89,9 +89,10 @@ export function toCsv(summary: BenchSummary): string {
       r.ok,
       r.elapsedMs,
       r.file ?? "",
-      (r.error ?? "").replaceAll('"', "'").replaceAll("\n", " "),
+      (r.error ?? "").replaceAll("\n", " "),
     ]
-      .map((v) => `"${v}"`)
+      // RFC 4180: quote fields, escape embedded quotes by doubling
+      .map((v) => `"${String(v).replaceAll('"', '""')}"`)
       .join(","),
   );
   return [header, ...rows].join("\n");
