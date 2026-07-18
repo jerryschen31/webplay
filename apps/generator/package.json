@@ -7,7 +7,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
-    "cli": "tsx src/cli.ts"
+    "cli": "tsx src/cli.ts",
+    "bench": "tsx src/bench.ts"
   },
   "dependencies": {
     "@webplay/adapters": "workspace:*"

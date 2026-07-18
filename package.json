@@ -15,6 +15,7 @@
     "format": "biome format --write .",
     "test": "pnpm -r test",
     "generate": "pnpm --filter @webplay/generator run cli",
+    "bench": "pnpm --filter @webplay/generator run bench",
     "prepare": "husky"
   },
   "devDependencies": {

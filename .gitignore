@@ -48,3 +48,9 @@ apps/generator/out/
 .next/
 .open-next/
 .wrangler/
+
+# bench output
+bench-results/
+
+# runtime caches
+.cache/
