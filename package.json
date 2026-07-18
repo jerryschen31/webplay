@@ -16,6 +16,7 @@
     "test": "pnpm -r test",
     "generate": "pnpm --filter @webplay/generator run cli",
     "bench": "pnpm --filter @webplay/generator run bench",
+    "hls": "pnpm --filter @webplay/generator run hls",
     "prepare": "husky"
   },
   "devDependencies": {

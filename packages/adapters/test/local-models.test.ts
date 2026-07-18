@@ -13,11 +13,18 @@ const neverRunner = vi.fn(async () => ({
 
 describe("local model factories", () => {
   it("acestep adapter targets the checkout project and turbo variant", async () => {
-    const adapter = createAceStepAdapter({ runner: neverRunner });
-    expect(adapter.name).toBe("acestep");
-    expect(adapter.costPerTrackUSD).toBe(0);
-    // no ACE-Step checkout on CI machines -> unhealthy, never a crash
-    expect(await adapter.isHealthy()).toBe(false);
+    const saved = process.env.ACESTEP_PROJECT_DIR;
+    process.env.ACESTEP_PROJECT_DIR = "/nonexistent/acestep-checkout";
+    try {
+      const adapter = createAceStepAdapter({ runner: neverRunner });
+      expect(adapter.name).toBe("acestep");
+      expect(adapter.costPerTrackUSD).toBe(0);
+      // checkout dir absent -> unhealthy, never a crash
+      expect(await adapter.isHealthy()).toBe(false);
+    } finally {
+      if (saved === undefined) delete process.env.ACESTEP_PROJECT_DIR;
+      else process.env.ACESTEP_PROJECT_DIR = saved;
+    }
   });
 
   it("stable-audio-open adapter reports open-source terms and zero cost", () => {

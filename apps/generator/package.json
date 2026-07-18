@@ -8,7 +8,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "cli": "tsx src/cli.ts",
-    "bench": "tsx src/bench.ts"
+    "bench": "tsx src/bench.ts",
+    "hls": "tsx src/hls.ts"
   },
   "dependencies": {
     "@webplay/adapters": "workspace:*"
