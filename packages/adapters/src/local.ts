@@ -245,10 +245,13 @@ export function genreProfile(genre: string): GenreProfile | undefined {
 
 function buildLocalPrompt(params: GenerateTrackParams): string {
   const profile = genreProfile(params.genre);
-  const bpmText = profile
-    ? `${profile.bpm} BPM`
-    : params.bpm
-      ? `${params.bpm[0]}-${params.bpm[1]} BPM`
+  // An explicit request BPM wins over the profile default, matching the
+  // precedence in aceStepMusicalArgs so the caption text and the structured
+  // --bpm flag never disagree within one request.
+  const bpmText = params.bpm
+    ? `${params.bpm[0]}-${params.bpm[1]} BPM`
+    : profile
+      ? `${profile.bpm} BPM`
       : null;
   const parts = [
     `${params.genre} music`,

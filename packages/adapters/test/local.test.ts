@@ -103,6 +103,28 @@ describe("LocalPythonAdapter", () => {
     expect(seenPrompt).toContain("upright bass on the downbeat");
   });
 
+  it("caption prefers an explicit BPM range over the profile default", async () => {
+    const audioFile = join(FIXTURE_DIR, "out.wav");
+    await writeFile(audioFile, "RIFF");
+    let seenPrompt = "";
+    const runner = vi.fn(async (_cmd: string, args: string[]) => {
+      seenPrompt = args[args.indexOf("--prompt") + 1];
+      return {
+        exitCode: 0,
+        stdout: `{"file": "${audioFile}", "durationSec": 30}\n`,
+        stderr: "",
+      };
+    });
+    await adapterWith(runner).generateTrack({
+      genre: "lofi",
+      durationSec: 30,
+      instrumental: true,
+      bpm: [80, 90],
+    });
+    expect(seenPrompt).toContain("80-90 BPM");
+    expect(seenPrompt).not.toContain("75 BPM");
+  });
+
   it("appends musicalArgs argv when the config provides them", async () => {
     const audioFile = join(FIXTURE_DIR, "out.wav");
     await writeFile(audioFile, "RIFF");
