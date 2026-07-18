@@ -11,6 +11,7 @@
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
+    "hls.js": "^1.6.16",
     "next": "^15.4.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

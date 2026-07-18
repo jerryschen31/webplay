@@ -6,6 +6,6 @@ describe("Home page", () => {
   it("renders the webplay landing content", () => {
     const html = renderToStaticMarkup(<Home />);
     expect(html).toContain("webplay");
-    expect(html).toContain("coming soon");
+    expect(html).toContain("always on");
   });
 });
