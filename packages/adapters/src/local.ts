@@ -258,8 +258,10 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
     // ~300 Hz (deep and muffled), RMS variance ~2 dB (one steady wash),
     // near-static harmony. Dark/still words, no bright ones ("shimmering",
     // "ethereal" drew a busy pulsing mix in drafts v1/v2).
+    // Negation-free: with CFG active, "no drums" still puts "drums" in the
+    // caption — "beatless" carries the same constraint as a positive tag.
     captionExtras: [
-      "deep ambient drone for sleeping",
+      "beatless ambient drone for deep sleep",
       "very slow sustained dark warm synth pads",
       "soft low register drone",
       "heavily low-pass filtered, muffled and distant",
@@ -267,7 +269,6 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
       "one continuous steady quiet wash of sound",
       "extremely calm and still",
       "peaceful heavenly floating atmosphere",
-      "no drums, no percussion, no beat",
     ],
   },
 };

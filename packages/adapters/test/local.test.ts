@@ -122,10 +122,11 @@ describe("LocalPythonAdapter", () => {
       instrumental: true,
     });
     expect(seenPrompt).toContain("in F Major");
-    expect(seenPrompt).toContain("deep ambient drone");
-    expect(seenPrompt).toContain("no drums, no percussion, no beat");
-    // beatless profile: no BPM in the caption, no --bpm conditioning
+    expect(seenPrompt).toContain("beatless ambient drone");
+    // beatless profile: no BPM in the caption, no --bpm conditioning, and
+    // no negations ("no drums" would still put "drums" in the caption)
     expect(seenPrompt).not.toContain("BPM");
+    expect(seenPrompt).not.toContain("drums");
   });
 
   it("caption prefers an explicit BPM range over the profile default", async () => {

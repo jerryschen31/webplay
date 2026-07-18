@@ -9,7 +9,7 @@ export interface Channel {
 
 const LOFI: Channel = {
   id: "lofi",
-  label: "Lofi Beats",
+  label: "Lofi Beats for Study",
   tagline: "Lofi beats for study",
   streamUrl: "https://stream.webplay.io/stream/lofi/playlist.m3u8",
   background: "/backgrounds/lofi-beats-1.jpg",
