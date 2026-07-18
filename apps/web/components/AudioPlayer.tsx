@@ -4,6 +4,12 @@ import Hls from "hls.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const STREAM_URL = "https://stream.webplay.io/stream/lofi/playlist.m3u8";
+const FADE_OUT_SECONDS = 2;
+
+/** Linear fade over the final FADE_OUT_SECONDS: 1 → 0 at track end. */
+export function fadeVolumeFor(remainingSec: number): number {
+  return Math.min(1, Math.max(0, remainingSec / FADE_OUT_SECONDS));
+}
 
 export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -31,12 +37,60 @@ export function AudioPlayer() {
     if (!audio) return;
     const onEnded = () => {
       audio.currentTime = 0;
+      audio.volume = 1; // undo the end-of-rotation fade
       // If the browser blocks the replay (autoplay/visibility policy),
       // reflect reality in the UI instead of a stale "playing" state.
       audio.play().catch(() => setPlaying(false));
     };
     audio.addEventListener("ended", onEnded);
     return () => audio.removeEventListener("ended", onEnded);
+  }, []);
+
+  // Fade fully out over the rotation's final seconds so the loop back
+  // to the top feels like a deliberate restart, not a hard splice.
+  // (iOS Safari ignores programmatic volume — it gets a hard loop until
+  // the WebAudio/visualizer work gives us a GainNode to ramp instead.)
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    let raf = 0;
+    const stopRamp = () => {
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    };
+    const ramp = () => {
+      const remaining = audio.duration - audio.currentTime;
+      if (!Number.isFinite(remaining) || audio.paused) {
+        stopRamp();
+        return;
+      }
+      if (remaining > FADE_OUT_SECONDS + 0.5) {
+        // user seeked away from the ending; restore and stand down
+        audio.volume = 1;
+        stopRamp();
+        return;
+      }
+      audio.volume = fadeVolumeFor(remaining);
+      raf = requestAnimationFrame(ramp);
+    };
+    const onTimeUpdate = () => {
+      const remaining = audio.duration - audio.currentTime;
+      if (
+        raf === 0 &&
+        !audio.paused &&
+        Number.isFinite(remaining) &&
+        remaining <= FADE_OUT_SECONDS + 0.5
+      ) {
+        raf = requestAnimationFrame(ramp);
+      }
+    };
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    return () => {
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      stopRamp();
+    };
   }, []);
 
   const toggle = useCallback(() => {
