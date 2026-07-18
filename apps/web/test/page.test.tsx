@@ -17,6 +17,7 @@ describe("Home page", () => {
     const html = renderToStaticMarkup(<Home />);
     expect(html).toContain("Lofi Beats for Study");
     expect(html).toContain("Calm Music for Sleep");
+    expect(html).toContain("Jazz for Lounging");
     expect(html).toContain("AI radio, always on.");
     expect(html).not.toContain("Lofi beats for study —");
     expect(html).toContain("lofi-beats-1.jpg");

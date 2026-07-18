@@ -271,6 +271,23 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
       "peaceful heavenly floating atmosphere",
     ],
   },
+  jazz: {
+    // Bb Major is the canonical horn-friendly jazz key; 90 BPM sits in the
+    // relaxed-swing pocket for a lounge set without dragging into ballad
+    // territory. Positive tags only (see the sleep caption notes above).
+    keyscale: "Bb Major",
+    bpm: 90,
+    captionExtras: [
+      "smooth late night jazz lounge",
+      "warm mellow grand piano comping with rich seventh chords",
+      "walking upright bass",
+      "soft brushed drums with a gentle swing feel",
+      "smoky tenor saxophone playing a relaxed melody",
+      "intimate small jazz club atmosphere",
+      "warm analog recording",
+      "elegant, sophisticated and relaxed",
+    ],
+  },
 };
 
 export function genreProfile(genre: string): GenreProfile | undefined {
