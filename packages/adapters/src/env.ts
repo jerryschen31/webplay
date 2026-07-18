@@ -15,7 +15,7 @@ export function requireEnv(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) {
     throw new Error(
-      `missing required environment variable ${name} — add it to .env (see .env.example)`,
+      `missing required environment variable ${name} — add it to .env (see docs/environment.md)`,
     );
   }
   return value;
