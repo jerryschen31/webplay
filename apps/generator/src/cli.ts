@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { copyFile, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
@@ -70,6 +71,12 @@ options:
 }
 
 async function main(): Promise<void> {
+  // provider credentials live in the repo-root .env for local runs
+  const rootEnv = resolve(import.meta.dirname, "../../../.env");
+  if (existsSync(rootEnv)) {
+    process.loadEnvFile(rootEnv);
+  }
+
   const args = parseCliArgs(process.argv.slice(2));
   const adapter = getAdapter(args.provider);
 
