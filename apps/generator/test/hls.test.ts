@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCrossfadeFilter } from "../src/hls.js";
+import { buildCrossfadeFilter } from "../src/hlslib.js";
 
 describe("buildCrossfadeFilter", () => {
   it("returns empty for a single track", () => {

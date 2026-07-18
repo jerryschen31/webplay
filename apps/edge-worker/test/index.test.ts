@@ -35,6 +35,17 @@ describe("parseStreamPath", () => {
     expect(parseStreamPath("/other/lofi/playlist.m3u8")).toBeNull();
     expect(parseStreamPath("/stream/lofi/")).toBeNull();
   });
+
+  it("rejects non-playlist/segment extensions", () => {
+    expect(parseStreamPath("/stream/lofi/secret.txt")).toBeNull();
+    expect(parseStreamPath("/stream/lofi/backup.wav")).toBeNull();
+    expect(parseStreamPath("/stream/lofi/playlist.m3u8.bak")).toBeNull();
+    expect(parseStreamPath("/stream/lofi/.m3u8")).toBeNull();
+    expect(parseStreamPath("/stream/lofi/x.v1.m3u8")).toEqual({
+      channel: "lofi",
+      file: "x.v1.m3u8",
+    });
+  });
 });
 
 describe("headersFor", () => {
@@ -94,7 +105,7 @@ describe("fetch handler", () => {
     expect(env.STREAM_BUCKET.get).not.toHaveBeenCalled();
   });
 
-  it("rejects non-GET methods", async () => {
+  it("rejects non-GET methods with CORS and Allow headers", async () => {
     const res = await worker.fetch(
       new Request("https://stream.webplay.io/stream/lofi/x.ts", {
         method: "POST",
@@ -102,5 +113,18 @@ describe("fetch handler", () => {
       envWith({}),
     );
     expect(res.status).toBe(405);
+    expect(res.headers.get("Allow")).toBe("GET, HEAD, OPTIONS");
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe("*");
+  });
+
+  it("preflight advertises Range and exposes ETag", async () => {
+    const res = await worker.fetch(
+      new Request("https://stream.webplay.io/stream/lofi/x.ts", {
+        method: "OPTIONS",
+      }),
+      envWith({}),
+    );
+    expect(res.headers.get("Access-Control-Allow-Headers")).toContain("Range");
+    expect(res.headers.get("Access-Control-Expose-Headers")).toContain("ETag");
   });
 });

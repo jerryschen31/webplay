@@ -21,17 +21,24 @@ export interface StreamPath {
   file: string;
 }
 
-/** GET /stream/{channel}/{file} — anything else is null. */
+/**
+ * GET /stream/{channel}/{file} — anything else is null. Only playlist
+ * and segment extensions are servable, so unrelated bucket objects can
+ * never leak through this route.
+ */
 export function parseStreamPath(pathname: string): StreamPath | null {
-  const match = pathname.match(/^\/stream\/([a-z0-9-]+)\/([A-Za-z0-9._-]+)$/);
+  const match = pathname.match(
+    /^\/stream\/([a-z0-9-]+)\/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\.(?:m3u8|ts|aac))$/,
+  );
   if (!match?.[1] || !match[2]) return null;
-  // segments/playlists only; no traversal-capable names by construction
   return { channel: match[1], file: match[2] };
 }
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+  "Access-Control-Allow-Headers": "Range, If-None-Match",
+  "Access-Control-Expose-Headers": "ETag",
 } as const;
 
 /**
@@ -66,7 +73,10 @@ export default {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
     if (request.method !== "GET" && request.method !== "HEAD") {
-      return new Response("method not allowed", { status: 405 });
+      return new Response("method not allowed", {
+        status: 405,
+        headers: { ...CORS_HEADERS, Allow: "GET, HEAD, OPTIONS" },
+      });
     }
     if (url.pathname === "/health") {
       return new Response(JSON.stringify({ status: "ok" }), {
