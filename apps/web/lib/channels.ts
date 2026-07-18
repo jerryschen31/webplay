@@ -22,7 +22,7 @@ export const CHANNELS: Channel[] = [
     label: "Calm Music for Sleep",
     tagline: "Calm music for sleep",
     streamUrl: "https://stream.webplay.io/stream/sleep/playlist.m3u8",
-    background: "/backgrounds/sleep-1.jpg",
+    background: "/backgrounds/calm-sleep-1.jpg",
   },
 ];
 

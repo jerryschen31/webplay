@@ -252,22 +252,17 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
   sleep: {
     keyscale: "F Major",
     bpm: 58,
-    // "Calm Music for Sleep": airy, heavenly, floating high up in the air.
-    // "beatless" is phrased as a genre tag rather than a "no drums" negation,
-    // which diffusion captions can misread as a request for drums.
+    // Owner-supplied "Calm Music for Sleep" wording (2026-07-17): the first
+    // draft (choir aahs / string swells / cathedral reverb) missed the vibe.
     captionExtras: [
-      "ambient sleep music",
-      "beatless",
-      "soft warm analog synth pads",
-      "gentle felt piano",
-      "airy angelic choir aahs",
-      "slow evolving string swells",
-      "lush cathedral reverb",
-      "shimmering high pad textures",
-      "weightless and floating above the clouds",
-      "calm peaceful heavenly atmosphere",
-      "smooth gentle dynamics",
-      "deeply relaxing drift to sleep",
+      "deep sleep ambient music",
+      "slow ethereal synth pads",
+      "soft minimalist piano melody",
+      "spacious reverb",
+      "peaceful",
+      "calming",
+      "heavenly atmosphere",
+      "no drums",
     ],
   },
 };
