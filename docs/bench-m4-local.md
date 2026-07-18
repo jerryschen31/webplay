@@ -27,9 +27,12 @@ torchao int8_weight_only (see apps/generator/py/acestep_generate.py).
 Machine remains usable during generation but expect memory pressure;
 schedule volume generation when idle.
 
-## Stable Audio Open 1.0 — pending
-Environment built (Python 3.11 pin, stable-audio-tools 0.0.x). Blocked
-on the gated-weights license acceptance for
-stabilityai/stable-audio-open-1.0 (HF_TOKEN currently gets 403).
+## Stable Audio Open 1.0 (MPS, 100 steps)
 
-## MusicGen — pending (benchmark-only; CC-BY-NC weights)
+2026-07-17: first 45s clip in 513s end-to-end; warm bench run 461s.
+Bench series interrupted by owner (coverage deemed sufficient for now).
+Output is ~47.5s for a 45s request (model over-delivers slightly).
+Owner listening note: right vibe, but drums obnoxious/off-rhythm — use
+for percussion-light textures/interludes, not primary tracks.
+
+## MusicGen — parked (benchmark-only; CC-BY-NC weights, never ran)
