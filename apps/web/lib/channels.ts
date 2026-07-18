@@ -20,6 +20,12 @@ export const CHANNELS: Channel[] = [
     streamUrl: "https://stream.webplay.io/stream/sleep/playlist.m3u8",
     background: "/backgrounds/calm-sleep-1.jpg",
   },
+  {
+    id: "jazz",
+    label: "Jazz for Lounging",
+    streamUrl: "https://stream.webplay.io/stream/jazz/playlist.m3u8",
+    background: "/backgrounds/jazz-1.jpg",
+  },
 ];
 
 export const DEFAULT_CHANNEL: Channel = LOFI;
