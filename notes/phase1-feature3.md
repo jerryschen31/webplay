@@ -1,5 +1,15 @@
 # Phase 1 — Feature 3: Cloudflare R2 + Worker Edge Delivery Layer
 
+> **Revision 2026-07-17**:
+> - The account API token already has R2 + Workers permissions
+>   (verified); GitHub secrets CLOUDFLARE_API_TOKEN / ACCOUNT_ID are
+>   set, and deploys follow the existing deploy-web.yml pattern.
+> - Use `wrangler.jsonc` (not wrangler.toml) to match apps/web.
+> - `apps/edge-worker` should reuse the repo's existing conventions:
+>   Biome, vitest, strict TS from tsconfig.base.json.
+> - This Worker is needed by Feature 1's new Milestone 0 (pre-rendered
+>   playlist), so build it before/alongside the droplet work.
+
 ## What This Feature Is
 
 The **public-facing distribution layer** that turns webplay.io into a global-scale radio station. A Cloudflare Worker sits at the edge, fetches `.m3u8` playlists and `.aac` segments from Cloudflare R2 object storage, and serves them to every listener's browser. Because R2 has **zero egress fees** and Workers are cached at every Cloudflare PoP, this layer handles 5 listeners or 50,000 listeners for essentially the same cost (~$0–$5/mo at our scale).

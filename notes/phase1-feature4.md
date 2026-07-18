@@ -1,8 +1,19 @@
 # Phase 1 — Feature 4: Build Next.js Frontend with Lofi Channel
 
+> **Revision 2026-07-17**:
+> - Hosting decision changed in Phase 0: the app is **already live at
+>   webplay.io on Cloudflare Workers** via @opennextjs/cloudflare
+>   (apps/web, auto-deployed by deploy-web.yml on merge to
+>   master/build) — **not Vercel**. Step 1 below reduces to installing
+>   Tailwind + hls.js etc. into the existing app.
+> - Analytics: Plausible/PostHog account creation was deferred in
+>   Phase 0 — create it here when wiring §7.
+> - Kinde (email magic-link auth) credentials already sit in .env for
+>   the later premium/playlist features — not needed for this feature.
+
 ## What This Feature Is
 
-The **user-facing web app** at `webplay.io` — a Next.js application deployed on Vercel that presents the Lofi channel with a single, beautiful play button. No signup, no menu navigation, no friction. Click. Hear music. The frontend wires up the Cloudflare HLS stream from Phase 1 Feature 3 to an HTML5 `<audio>` element via `hls.js`, displays now-playing metadata, and renders the page in a way that feels worth opening as a permanent browser tab.
+The **user-facing web app** at `webplay.io` — a Next.js application on Cloudflare Workers that presents the Lofi channel with a single, beautiful play button. No signup, no menu navigation, no friction. Click. Hear music. The frontend wires up the Cloudflare HLS stream from Phase 1 Feature 3 to an HTML5 `<audio>` element via `hls.js`, displays now-playing metadata, and renders the page in a way that feels worth opening as a permanent browser tab.
 
 ## Why It Matters
 

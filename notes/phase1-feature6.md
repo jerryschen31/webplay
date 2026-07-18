@@ -1,5 +1,20 @@
 # Phase 1 — Feature 6: Internal Launch + Uptime Monitoring
 
+> **Revision 2026-07-17**:
+> - Sentry / Grafana / Discord-webhook accounts were deliberately
+>   deferred in Phase 0 — create them at the start of this feature (§2,
+>   §4), not before.
+> - Add to the launch gate: the two ⚠️ licensing confirmations in
+>   docs/provider-licensing.md (ACE-Step variant license inheritance,
+>   Stability community-license streaming terms) must be closed before
+>   the cohort invite goes out.
+> - Fold the Phase 0 leftover **24h generation soak on the M4** (memory
+>   leaks / thermals across many invocations) into the soak week's
+>   checklist.
+> - GitHub branch protection needs Pro on this private repo (403 as of
+>   2026-07-16) — either upgrade before soak week or accept the risk and
+>   note it in the retro.
+
 ## What This Feature Is
 
 A **structured soft-launch** to ~10 trusted friends and family, during which the full Lofi channel runs 24/7 for at least **one continuous week**. The goal is not marketing — it's stress-testing the whole pipeline (generation → mastering → curation → Liquidsoap → R2 → Worker → browser) under realistic, long-duration use before any public exposure. Pair this with comprehensive uptime monitoring and an on-call alert path so we catch every regression before strangers do.
