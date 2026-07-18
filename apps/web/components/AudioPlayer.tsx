@@ -3,7 +3,6 @@
 import Hls from "hls.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const STREAM_URL = "https://stream.webplay.io/stream/lofi/playlist.m3u8";
 const FADE_OUT_SECONDS = 4;
 
 /** Linear fade over the final FADE_OUT_SECONDS: 1 → 0 at track end. */
@@ -11,7 +10,7 @@ export function fadeVolumeFor(remainingSec: number): number {
   return Math.min(1, Math.max(0, remainingSec / FADE_OUT_SECONDS));
 }
 
-export function AudioPlayer() {
+export function AudioPlayer({ streamUrl }: { streamUrl: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -20,15 +19,15 @@ export function AudioPlayer() {
     if (!audio) return;
     if (Hls.isSupported()) {
       const hls = new Hls();
-      hls.loadSource(STREAM_URL);
+      hls.loadSource(streamUrl);
       hls.attachMedia(audio);
       return () => hls.destroy();
     }
     if (audio.canPlayType("application/vnd.apple.mpegurl")) {
-      audio.src = STREAM_URL; // Safari native HLS
+      audio.src = streamUrl; // Safari native HLS
     }
     return undefined;
-  }, []);
+  }, [streamUrl]);
 
   // The milestone-0 rotation is a finite VOD playlist; loop it so the
   // channel feels continuous until live Liquidsoap mixing replaces it.

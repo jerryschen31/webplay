@@ -220,7 +220,8 @@ export function parseScriptResult(stdout: string): LocalScriptResult | null {
  */
 export interface GenreProfile {
   keyscale: string;
-  bpm: number;
+  /** Omit for beatless genres — sending a BPM conditions a pulse grid in. */
+  bpm?: number;
   captionExtras: string[];
 }
 
@@ -249,6 +250,27 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
       "relaxed study beat",
     ],
   },
+  sleep: {
+    keyscale: "F Major",
+    // No bpm: the owner's reference track measures near-zero pulse clarity
+    // and 0.1% percussive energy — sending a BPM conditions a beat grid in.
+    // Caption tuned against that reference (2026-07-17): spectral centroid
+    // ~300 Hz (deep and muffled), RMS variance ~2 dB (one steady wash),
+    // near-static harmony. Dark/still words, no bright ones ("shimmering",
+    // "ethereal" drew a busy pulsing mix in drafts v1/v2).
+    // Negation-free: with CFG active, "no drums" still puts "drums" in the
+    // caption — "beatless" carries the same constraint as a positive tag.
+    captionExtras: [
+      "beatless ambient drone for deep sleep",
+      "very slow sustained dark warm synth pads",
+      "soft low register drone",
+      "heavily low-pass filtered, muffled and distant",
+      "sparse gentle piano notes far away in the distance",
+      "one continuous steady quiet wash of sound",
+      "extremely calm and still",
+      "peaceful heavenly floating atmosphere",
+    ],
+  },
 };
 
 export function genreProfile(genre: string): GenreProfile | undefined {
@@ -262,7 +284,7 @@ function buildLocalPrompt(params: GenerateTrackParams): string {
   // --bpm flag never disagree within one request.
   const bpmText = params.bpm
     ? `${params.bpm[0]}-${params.bpm[1]} BPM`
-    : profile
+    : profile?.bpm != null
       ? `${profile.bpm} BPM`
       : null;
   const parts = [

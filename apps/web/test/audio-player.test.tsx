@@ -19,7 +19,9 @@ describe("fadeVolumeFor", () => {
 
 describe("AudioPlayer", () => {
   it("renders a paused play button initially", () => {
-    const html = renderToStaticMarkup(<AudioPlayer />);
+    const html = renderToStaticMarkup(
+      <AudioPlayer streamUrl="https://example.test/playlist.m3u8" />,
+    );
     expect(html).toContain('aria-label="Play"');
     expect(html).toContain("<audio");
     expect(html).not.toContain('aria-label="Pause"');

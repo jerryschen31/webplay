@@ -10,6 +10,7 @@ interface CliArgs {
   duration: number;
   out: string;
   mood?: string;
+  seed?: string;
 }
 
 function parseCliArgs(argv: string[]): CliArgs {
@@ -21,6 +22,7 @@ function parseCliArgs(argv: string[]): CliArgs {
       duration: { type: "string", short: "d" },
       out: { type: "string", short: "o" },
       mood: { type: "string", short: "m" },
+      seed: { type: "string", short: "s" },
       help: { type: "boolean", short: "h" },
     },
     allowPositionals: false,
@@ -52,6 +54,7 @@ function parseCliArgs(argv: string[]): CliArgs {
     duration,
     out: values.out ?? "./out",
     mood: values.mood,
+    seed: values.seed,
   };
 }
 
@@ -59,13 +62,14 @@ function printHelp(): void {
   console.log(`webplay generator CLI
 
 usage:
-  pnpm generate --provider=<name> --genre=<genre> --duration=<sec> [--mood=<mood>] [--out=<dir>]
+  pnpm generate --provider=<name> --genre=<genre> --duration=<sec> [--mood=<mood>] [--seed=<n>] [--out=<dir>]
 
 options:
   -p, --provider   adapter name (default: mock). known: ${KNOWN_ADAPTERS.join(", ")}
   -g, --genre      target genre (default: lofi)
   -d, --duration   duration in seconds (default: 30)
   -m, --mood       optional mood tag
+  -s, --seed       fixed RNG seed for reproducible renders
   -o, --out        output directory (default: ./out)
   -h, --help       show this help`);
 }
@@ -93,6 +97,7 @@ async function main(): Promise<void> {
     genre: args.genre,
     durationSec: args.duration,
     mood: args.mood,
+    seed: args.seed,
     instrumental: true,
   });
   const elapsedMs = Date.now() - startedAt;

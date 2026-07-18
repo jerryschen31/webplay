@@ -48,7 +48,7 @@ export function aceStepMusicalArgs(params: GenerateTrackParams): string[] {
     process.env.ACESTEP_BPM ??
     (bpmMidpoint != null
       ? String(bpmMidpoint)
-      : profile
+      : profile?.bpm != null
         ? String(profile.bpm)
         : undefined);
   const steps = process.env.ACESTEP_INFERENCE_STEPS;
