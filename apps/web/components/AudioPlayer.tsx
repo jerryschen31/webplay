@@ -4,7 +4,7 @@ import Hls from "hls.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const STREAM_URL = "https://stream.webplay.io/stream/lofi/playlist.m3u8";
-const FADE_OUT_SECONDS = 2;
+const FADE_OUT_SECONDS = 4;
 
 /** Linear fade over the final FADE_OUT_SECONDS: 1 → 0 at track end. */
 export function fadeVolumeFor(remainingSec: number): number {

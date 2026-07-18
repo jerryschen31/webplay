@@ -27,6 +27,13 @@ torchao int8_weight_only (see apps/generator/py/acestep_generate.py).
 Machine remains usable during generation but expect memory pressure;
 schedule volume generation when idle.
 
+### 300s (5-minute) tracks — 2026-07-17, closes the decision-doc condition
+
+2 runs, 300.0s output each: 406.6s and 377.8s wall clock cold. Net of
+the ~3min model load, warm inference is ~3.2–3.7min per 5-minute track
+(faster than real-time). 25 tracks/day ≈ 1.5h warm compute. Memory held
+on 16GB. 4–5 minute track generation is confirmed practical.
+
 ## Stable Audio Open 1.0 (MPS, 100 steps)
 
 2026-07-17: first 45s clip in 513s end-to-end; warm bench run 461s.
