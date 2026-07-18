@@ -228,13 +228,25 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
   lofi: {
     keyscale: "C Major",
     bpm: 75,
+    // Owner-approved "true Lofi Beats" wording (2026-07-17 A/B): warm, dusty
+    // and tape-saturated beats the vibe back in. The earlier "clean / steady /
+    // in time / no dissonance" phrasing fixed the off chords + off-beat bass
+    // but sounded sterile — the keyscale/bpm fields above keep harmony and
+    // tempo locked, so the caption is free to describe character, not order.
     captionExtras: [
-      "warm Rhodes electric piano",
-      "soft mellow jazz chords",
-      "clean upright bass on the downbeat",
-      "steady laid-back boom-bap drums",
+      "chillhop",
+      "warm dusty Rhodes piano",
+      "mellow jazzy maj7 chords",
+      "soft upright bass",
+      "laid-back swung boom-bap drums slightly behind the beat",
+      "brushed hi-hats",
       "vinyl crackle",
-      "relaxed, in key, in time, no dissonance",
+      "tape hiss",
+      "cassette wow and flutter",
+      "warm analog tape saturation",
+      "low-pass filtered",
+      "nostalgic and cozy",
+      "relaxed study beat",
     ],
   },
 };
