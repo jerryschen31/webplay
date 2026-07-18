@@ -104,6 +104,29 @@ describe("LocalPythonAdapter", () => {
     expect(seenPrompt).toContain("cassette wow and flutter");
   });
 
+  it("enriches the sleep caption with key, BPM and beatless palette", async () => {
+    const audioFile = join(FIXTURE_DIR, "out.wav");
+    await writeFile(audioFile, "RIFF");
+    let seenPrompt = "";
+    const runner = vi.fn(async (_cmd: string, args: string[]) => {
+      seenPrompt = args[args.indexOf("--prompt") + 1];
+      return {
+        exitCode: 0,
+        stdout: `{"file": "${audioFile}", "durationSec": 30}\n`,
+        stderr: "",
+      };
+    });
+    await adapterWith(runner).generateTrack({
+      genre: "sleep",
+      durationSec: 30,
+      instrumental: true,
+    });
+    expect(seenPrompt).toContain("in F Major");
+    expect(seenPrompt).toContain("58 BPM");
+    expect(seenPrompt).toContain("beatless");
+    expect(seenPrompt).toContain("weightless and floating above the clouds");
+  });
+
   it("caption prefers an explicit BPM range over the profile default", async () => {
     const audioFile = join(FIXTURE_DIR, "out.wav");
     await writeFile(audioFile, "RIFF");
