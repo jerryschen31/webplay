@@ -20,6 +20,17 @@ interface HlsArgs {
   crossfadeSec: number;
   outDir: string;
   upload: boolean;
+  prefix: string;
+}
+
+/**
+ * Segments are edge-cached as immutable for 5 minutes, so every build
+ * must use fresh segment names or listeners could hear a mix of old and
+ * new rotations while caches drain. Default prefix: millisecond build
+ * timestamp — collisions would need two builds in the same millisecond.
+ */
+function defaultSegmentPrefix(): string {
+  return `r${Date.now()}`;
 }
 
 function parseCliArgs(argv: string[]): HlsArgs {
@@ -31,17 +42,23 @@ function parseCliArgs(argv: string[]): HlsArgs {
       crossfade: { type: "string", short: "x" },
       out: { type: "string", short: "o" },
       upload: { type: "boolean", short: "u" },
+      prefix: { type: "string", short: "p" },
     },
   });
   if (!values.in) {
     console.error(
-      "usage: pnpm hls --in <dir-of-tracks> [--channel lofi] [--crossfade 3] [--out dir] [--upload]",
+      "usage: pnpm hls --in <dir-of-tracks> [--channel lofi] [--crossfade 3] [--out dir] [--prefix rYYYYMMDDHHMM] [--upload]",
     );
     process.exit(2);
   }
   const crossfadeSec = Number(values.crossfade ?? "3");
   if (!Number.isFinite(crossfadeSec) || crossfadeSec < 0) {
     console.error(`invalid --crossfade: ${values.crossfade}`);
+    process.exit(2);
+  }
+  const prefix = values.prefix ?? defaultSegmentPrefix();
+  if (!/^[A-Za-z0-9_-]+$/.test(prefix)) {
+    console.error(`invalid --prefix (must match [A-Za-z0-9_-]+): ${prefix}`);
     process.exit(2);
   }
   const channel = values.channel ?? "lofi";
@@ -51,6 +68,7 @@ function parseCliArgs(argv: string[]): HlsArgs {
     crossfadeSec,
     outDir: resolve(values.out ?? `./hls-out/${channel}`),
     upload: values.upload ?? false,
+    prefix,
   };
 }
 
@@ -152,12 +170,15 @@ async function main(): Promise<void> {
     "-hls_playlist_type",
     "vod",
     "-hls_segment_filename",
-    join(args.outDir, "seg-%05d.ts"),
+    join(args.outDir, `${args.prefix}-%05d.ts`),
     join(args.outDir, "playlist.m3u8"),
   ]);
 
+  // only this build's artifacts — the out dir may hold older prefixes
   const produced = (await readdir(args.outDir)).filter(
-    (f) => f.endsWith(".ts") || f.endsWith(".m3u8"),
+    (f) =>
+      f === "playlist.m3u8" ||
+      (f.startsWith(`${args.prefix}-`) && f.endsWith(".ts")),
   );
   if (args.upload) {
     await uploadToR2(args.channel, args.outDir, produced.sort());

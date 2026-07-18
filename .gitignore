@@ -57,3 +57,6 @@ bench-results/
 
 # hls builder output
 hls-out/
+
+# local track library (synced to R2, not git)
+library/
