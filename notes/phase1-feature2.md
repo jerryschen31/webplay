@@ -33,9 +33,9 @@ Builds the **library replenishment loop**: a scheduled background worker that co
 ## Implementation Steps
 
 ### 1. Generator Worker Architecture
-- [ ] `apps/generator` is a long-running Node process (TypeScript) deployed on the same droplet as Liquidsoap (or a sibling $4 droplet to isolate failures).
-- [ ] Uses `BullMQ` (Redis-backed queue) for job orchestration. Redis can run on the same droplet (1 GB is plenty).
-- [ ] Three queues: `generate`, `master`, `publish`.
+- [ ] `apps/generator` is a long-running Node process (TypeScript) on the **M4 (or future Mac Mini)** — the local models it drives need Apple Silicon; the droplet only mixes/serves (see revision block above).
+- [ ] V1 orchestration: a simple SQLite/D1-backed job table + cron — single machine, no Redis. Revisit BullMQ only if generation spreads across machines.
+- [ ] Three job stages: `generate`, `master`, `publish`.
 
 ### 2. Scheduling
 - [ ] Cron tick every 30 minutes: enqueue N `generate` jobs based on current library depth.

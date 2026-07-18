@@ -62,7 +62,7 @@ export default {
   }
 };
 ```
-- [ ] Bind R2 bucket to Worker via `wrangler.toml`.
+- [ ] Bind R2 bucket to Worker via `wrangler.jsonc` (matching apps/web).
 - [ ] Deploy with `wrangler deploy`.
 
 ### 3. Custom Domain Routing
