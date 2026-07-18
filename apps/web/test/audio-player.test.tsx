@@ -9,9 +9,9 @@ vi.mock("hls.js", () => ({ default: { isSupported: () => false } }));
 describe("fadeVolumeFor", () => {
   it("holds full volume outside the fade window and ramps to silence", () => {
     expect(fadeVolumeFor(30)).toBe(1);
-    expect(fadeVolumeFor(2)).toBe(1);
-    expect(fadeVolumeFor(1)).toBe(0.5);
-    expect(fadeVolumeFor(0.5)).toBe(0.25);
+    expect(fadeVolumeFor(4)).toBe(1);
+    expect(fadeVolumeFor(2)).toBe(0.5);
+    expect(fadeVolumeFor(1)).toBe(0.25);
     expect(fadeVolumeFor(0)).toBe(0);
     expect(fadeVolumeFor(-0.1)).toBe(0);
   });
