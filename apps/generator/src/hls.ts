@@ -26,10 +26,11 @@ interface HlsArgs {
 /**
  * Segments are edge-cached as immutable for 5 minutes, so every build
  * must use fresh segment names or listeners could hear a mix of old and
- * new rotations while caches drain. Default prefix: build timestamp.
+ * new rotations while caches drain. Default prefix: millisecond build
+ * timestamp — collisions would need two builds in the same millisecond.
  */
 function defaultSegmentPrefix(): string {
-  return `r${new Date().toISOString().slice(0, 16).replaceAll(/[-:T]/g, "")}`;
+  return `r${Date.now()}`;
 }
 
 function parseCliArgs(argv: string[]): HlsArgs {
