@@ -1,0 +1,29 @@
+{
+  "name": "webplay",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "pnpm -r test",
+    "generate": "pnpm --filter @webplay/generator run cli",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.4",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@types/node": "^22.9.0",
+    "husky": "^9.1.7",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}
