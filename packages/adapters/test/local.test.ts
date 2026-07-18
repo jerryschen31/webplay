@@ -104,7 +104,7 @@ describe("LocalPythonAdapter", () => {
     expect(seenPrompt).toContain("cassette wow and flutter");
   });
 
-  it("enriches the sleep caption with key, BPM and ambient palette", async () => {
+  it("enriches the sleep caption with key and a beatless drone palette", async () => {
     const audioFile = join(FIXTURE_DIR, "out.wav");
     await writeFile(audioFile, "RIFF");
     let seenPrompt = "";
@@ -122,9 +122,10 @@ describe("LocalPythonAdapter", () => {
       instrumental: true,
     });
     expect(seenPrompt).toContain("in F Major");
-    expect(seenPrompt).toContain("58 BPM");
-    expect(seenPrompt).toContain("slow ethereal synth pads");
-    expect(seenPrompt).toContain("no drums");
+    expect(seenPrompt).toContain("deep ambient drone");
+    expect(seenPrompt).toContain("no drums, no percussion, no beat");
+    // beatless profile: no BPM in the caption, no --bpm conditioning
+    expect(seenPrompt).not.toContain("BPM");
   });
 
   it("caption prefers an explicit BPM range over the profile default", async () => {
