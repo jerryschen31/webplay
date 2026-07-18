@@ -5,6 +5,8 @@ export {
 export { hasCredentials, requireEnv } from "./env.js";
 export { type FetchWithRetryOptions, fetchWithRetry } from "./http.js";
 export {
+  type GenreProfile,
+  genreProfile,
   LocalPythonAdapter,
   type LocalPythonAdapterConfig,
   type LocalScriptResult,
@@ -13,6 +15,7 @@ export {
   parseScriptResult,
 } from "./local.js";
 export {
+  aceStepMusicalArgs,
   createAceStepAdapter,
   createMusicGenAdapter,
   createStableAudioOpenAdapter,

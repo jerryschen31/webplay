@@ -64,6 +64,12 @@ export interface LocalPythonAdapterConfig {
   uvArgs?: string[];
   /** Extra script argv derived from adapter-specific settings. */
   extraArgs?: string[];
+  /**
+   * Per-call musical argv (key/BPM/steps/guidance) derived from the request.
+   * Model-specific — only adapters whose script parses these flags set it, so
+   * other models never receive flags they can't handle.
+   */
+  musicalArgs?: (params: GenerateTrackParams) => string[];
   /** Model inference is slow; default 30 min per track. */
   timeoutMs?: number;
   format?: AudioFormat;
@@ -129,6 +135,7 @@ export class LocalPythonAdapter implements AudioAdapter {
       "--out-dir",
       outDir,
       ...(params.seed ? ["--seed", params.seed] : []),
+      ...(this.config.musicalArgs?.(params) ?? []),
       ...(this.config.extraArgs ?? []),
     ];
 
@@ -205,11 +212,53 @@ export function parseScriptResult(stdout: string): LocalScriptResult | null {
   return null;
 }
 
+/**
+ * Per-genre musical defaults. `keyscale` and `bpm` feed ACE-Step's structured
+ * conditioning (stronger than caption text) to keep chords diatonic and the
+ * groove on-grid; `captionExtras` name the instruments/production/feel so the
+ * model has less room to wander into off chords and off-beat bass.
+ */
+export interface GenreProfile {
+  keyscale: string;
+  bpm: number;
+  captionExtras: string[];
+}
+
+const GENRE_PROFILES: Record<string, GenreProfile> = {
+  lofi: {
+    keyscale: "C Major",
+    bpm: 75,
+    captionExtras: [
+      "warm Rhodes electric piano",
+      "soft mellow jazz chords",
+      "clean upright bass on the downbeat",
+      "steady laid-back boom-bap drums",
+      "vinyl crackle",
+      "relaxed, in key, in time, no dissonance",
+    ],
+  },
+};
+
+export function genreProfile(genre: string): GenreProfile | undefined {
+  return GENRE_PROFILES[genre.trim().toLowerCase()];
+}
+
 function buildLocalPrompt(params: GenerateTrackParams): string {
+  const profile = genreProfile(params.genre);
+  // An explicit request BPM wins over the profile default, matching the
+  // precedence in aceStepMusicalArgs so the caption text and the structured
+  // --bpm flag never disagree within one request.
+  const bpmText = params.bpm
+    ? `${params.bpm[0]}-${params.bpm[1]} BPM`
+    : profile
+      ? `${profile.bpm} BPM`
+      : null;
   const parts = [
     `${params.genre} music`,
     params.mood ? `${params.mood} mood` : null,
-    params.bpm ? `${params.bpm[0]}-${params.bpm[1]} BPM` : null,
+    ...(profile?.captionExtras ?? []),
+    profile ? `in ${profile.keyscale}` : null,
+    bpmText,
     params.instrumental ? "instrumental" : null,
     "loopable background track",
   ];

@@ -26,6 +26,33 @@ def main() -> int:
     parser.add_argument("--seed", default=None)
     parser.add_argument("--variant", default="acestep-v15-turbo")
     parser.add_argument(
+        "--keyscale",
+        default="",
+        help='Musical key e.g. "C Major" / "Am"; empty = model auto-detects. '
+        "Constrains harmony so chords stay diatonic (fixes 'not real chords').",
+    )
+    parser.add_argument(
+        "--bpm",
+        type=int,
+        default=None,
+        help="Target BPM (30-300); omit for auto-estimate. Locks tempo so bass/"
+        "drums stay on the grid (fixes off-beat notes).",
+    )
+    parser.add_argument(
+        "--inference-steps",
+        type=int,
+        default=8,
+        help="Diffusion steps: 8 is the turbo sweet spot; 32-100 for the "
+        "non-turbo base model (more steps = cleaner harmony/timing).",
+    )
+    parser.add_argument(
+        "--guidance-scale",
+        type=float,
+        default=7.0,
+        help="CFG strength; higher = stricter prompt adherence. Only affects the "
+        "non-turbo base model (turbo ignores it).",
+    )
+    parser.add_argument(
         "--quantization",
         default="int8_weight_only",
         help='torchao quantization; pass "none" to disable (16GB M4 needs it)',
@@ -70,7 +97,10 @@ def main() -> int:
         caption=args.prompt[:512],
         duration=float(args.duration),
         seed=int(args.seed) if args.seed else -1,
-        inference_steps=8,  # turbo variant sweet spot
+        inference_steps=args.inference_steps,
+        guidance_scale=args.guidance_scale,
+        keyscale=args.keyscale,
+        bpm=args.bpm,
     )
     config = GenerationConfig(batch_size=1, audio_format="wav")
 
@@ -89,6 +119,10 @@ def main() -> int:
                 "durationSec": float(args.duration),
                 "model": args.variant,
                 "device": device,
+                "inferenceSteps": args.inference_steps,
+                "guidanceScale": args.guidance_scale,
+                "keyscale": args.keyscale or None,
+                "bpm": args.bpm,
                 "elapsedSec": round(time.time() - started, 1),
             }
         )

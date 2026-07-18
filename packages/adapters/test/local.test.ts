@@ -81,6 +81,75 @@ describe("LocalPythonAdapter", () => {
     expect(runner).toHaveBeenCalledTimes(1);
   });
 
+  it("enriches the lofi caption with key, BPM and instrument constraints", async () => {
+    const audioFile = join(FIXTURE_DIR, "out.wav");
+    await writeFile(audioFile, "RIFF");
+    let seenPrompt = "";
+    const runner = vi.fn(async (_cmd: string, args: string[]) => {
+      seenPrompt = args[args.indexOf("--prompt") + 1];
+      return {
+        exitCode: 0,
+        stdout: `{"file": "${audioFile}", "durationSec": 30}\n`,
+        stderr: "",
+      };
+    });
+    await adapterWith(runner).generateTrack({
+      genre: "lofi",
+      durationSec: 30,
+      instrumental: true,
+    });
+    expect(seenPrompt).toContain("in C Major");
+    expect(seenPrompt).toContain("75 BPM");
+    expect(seenPrompt).toContain("upright bass on the downbeat");
+  });
+
+  it("caption prefers an explicit BPM range over the profile default", async () => {
+    const audioFile = join(FIXTURE_DIR, "out.wav");
+    await writeFile(audioFile, "RIFF");
+    let seenPrompt = "";
+    const runner = vi.fn(async (_cmd: string, args: string[]) => {
+      seenPrompt = args[args.indexOf("--prompt") + 1];
+      return {
+        exitCode: 0,
+        stdout: `{"file": "${audioFile}", "durationSec": 30}\n`,
+        stderr: "",
+      };
+    });
+    await adapterWith(runner).generateTrack({
+      genre: "lofi",
+      durationSec: 30,
+      instrumental: true,
+      bpm: [80, 90],
+    });
+    expect(seenPrompt).toContain("80-90 BPM");
+    expect(seenPrompt).not.toContain("75 BPM");
+  });
+
+  it("appends musicalArgs argv when the config provides them", async () => {
+    const audioFile = join(FIXTURE_DIR, "out.wav");
+    await writeFile(audioFile, "RIFF");
+    const runner = vi.fn(async (_cmd: string, _args: string[]) => ({
+      exitCode: 0,
+      stdout: `{"file": "${audioFile}", "durationSec": 30}\n`,
+      stderr: "",
+    }));
+    const adapter = new LocalPythonAdapter({
+      name: "test-local",
+      scriptPath: SCRIPT,
+      licenseTerms: "open-source",
+      runner,
+      musicalArgs: (p) => ["--keyscale", `${p.genre}-key`],
+    });
+    await adapter.generateTrack({
+      genre: "lofi",
+      durationSec: 30,
+      instrumental: true,
+    });
+    const args = runner.mock.calls[0]?.[1] ?? [];
+    expect(args).toContain("--keyscale");
+    expect(args[args.indexOf("--keyscale") + 1]).toBe("lofi-key");
+  });
+
   it("raises AdapterError with stderr tail on non-zero exit", async () => {
     const runner = okRunner({
       exitCode: 2,

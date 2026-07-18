@@ -1,7 +1,12 @@
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { LocalPythonAdapter, type LocalPythonAdapterConfig } from "./local.js";
+import {
+  genreProfile,
+  LocalPythonAdapter,
+  type LocalPythonAdapterConfig,
+} from "./local.js";
+import type { GenerateTrackParams } from "./types.js";
 
 /**
  * Directory containing the PEP 723 generator scripts. Resolvable from both
@@ -18,6 +23,43 @@ function defaultScriptDir(): string {
   // packages/adapters/{src,dist} -> repo root -> apps/generator/py
   const fromPackage = join(import.meta.dirname, "../../../apps/generator/py");
   return fromPackage;
+}
+
+/**
+ * Musical controls for ACE-Step, resolved per request. `keyscale` and `bpm`
+ * come from the genre profile (or the midpoint of an explicit BPM range) and
+ * always apply — on turbo and base alike — because they constrain harmony and
+ * tempo directly, which is what tames off chords and off-beat bass.
+ *
+ * `inference_steps` and `guidance_scale` keep the Python script's defaults
+ * (8 / 7.0 — the fast turbo path) unless overridden. Set ACESTEP_VARIANT=
+ * acestep-v15-base together with ACESTEP_INFERENCE_STEPS (e.g. 32) and
+ * ACESTEP_GUIDANCE_SCALE (e.g. 8) to engage the slower non-turbo quality path
+ * where CFG actually takes effect. Every knob is env-overridable.
+ */
+export function aceStepMusicalArgs(params: GenerateTrackParams): string[] {
+  const profile = genreProfile(params.genre);
+  const bpmMidpoint = params.bpm
+    ? Math.round((params.bpm[0] + params.bpm[1]) / 2)
+    : undefined;
+
+  const keyscale = process.env.ACESTEP_KEYSCALE ?? profile?.keyscale;
+  const bpm =
+    process.env.ACESTEP_BPM ??
+    (bpmMidpoint != null
+      ? String(bpmMidpoint)
+      : profile
+        ? String(profile.bpm)
+        : undefined);
+  const steps = process.env.ACESTEP_INFERENCE_STEPS;
+  const guidance = process.env.ACESTEP_GUIDANCE_SCALE;
+
+  const args: string[] = [];
+  if (keyscale) args.push("--keyscale", keyscale);
+  if (bpm) args.push("--bpm", bpm);
+  if (steps) args.push("--inference-steps", steps);
+  if (guidance) args.push("--guidance-scale", guidance);
+  return args;
 }
 
 /**
@@ -42,6 +84,7 @@ export function createAceStepAdapter(
     name: "acestep",
     scriptPath: join(scriptDir, "acestep_generate.py"),
     licenseTerms: "open-source",
+    musicalArgs: aceStepMusicalArgs,
     uvArgs: ["run", "--project", projectDir, "python"],
     extraArgs: [
       "--variant",
