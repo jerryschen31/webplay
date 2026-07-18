@@ -5,6 +5,9 @@
 #   "torch>=2.3",
 #   "torchaudio>=2.3",
 #   "einops",
+#   "numpy<2",
+#   "pytorch-lightning>=2.0",
+#   "soundfile",
 # ]
 # ///
 """Generate one clip with Stable Audio Open 1.0.
@@ -48,6 +51,24 @@ def main() -> int:
     from stable_audio_tools.inference.generation import generate_diffusion_cond
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
+
+    if device == "mps":
+        # MPS has no float64; DiffusionTransformer.apg_project upcasts to
+        # double for guidance projection. Run that method with double
+        # aliased to float32 — the precision loss is inaudible.
+        from stable_audio_tools.models.dit import DiffusionTransformer
+
+        _orig_apg_project = DiffusionTransformer.apg_project
+
+        def _apg_project_f32(self, v0, v1, padding_mask=None):
+            orig_double = torch.Tensor.double
+            torch.Tensor.double = torch.Tensor.float  # type: ignore[assignment]
+            try:
+                return _orig_apg_project(self, v0, v1, padding_mask)
+            finally:
+                torch.Tensor.double = orig_double  # type: ignore[assignment]
+
+        DiffusionTransformer.apg_project = _apg_project_f32
     seconds = min(float(args.duration), MAX_SECONDS)
 
     started = time.time()
