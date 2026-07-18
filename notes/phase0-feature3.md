@@ -1,5 +1,24 @@
 # Phase 0 — Feature 3: Generate the 20-Hour Lofi Seed Library
 
+> **Revision 2026-07-17** (post Feature 2 outcome — see
+> docs/phase0-feature2-decision.md):
+> - Batch generator is **ACE-Step 1.5 local on the M4** (not Mubert /
+>   Eleven Labs as originally guessed). SAO supplies percussion-light
+>   interlude beds; MusicGen is excluded (CC-BY-NC).
+> - Generate at **240–300s per track** directly (ACE-Step supports it
+>   natively) — no stitching.
+> - Run the batch through a **resident-model worker** (`uv run
+>   acestep-api` in the checkout) — per-process cold start is ~3 min,
+>   warm inference ~8× faster (docs/bench-m4-local.md). Overnight
+>   batches on the M4; ~1.5× overgeneration to cover the 60–70% keep
+>   rate.
+> - Prompt tuning: fold in listening-test feedback (SAO drums off-rhythm
+>   → "soft brushed drums", "no drums" descriptors; see
+>   docs/listening-test.md).
+> - Catalog DB: consider **Cloudflare D1** instead of Supabase/Neon —
+>   the stack is CF-first now (web on Workers, R2 token live) and D1
+>   keeps auth/billing in one place. Decide at implementation time.
+
 ## What This Feature Is
 
 Produces the **initial rotating audio library for the Lofi channel** — roughly 20 hours of commercially-licensed, AI-generated instrumental tracks (about 300–400 tracks at 3–4 minutes each). This library is what Liquidsoap will shuffle through 24/7 in Phase 1. Building it now de-risks the launch: when we flip Phase 1 on, there is already enough material that no casual listener will hear a repeat within a typical session.
@@ -26,7 +45,7 @@ Create `docs/channel-spec-lofi.md`:
 - [ ] Vary prompts to avoid library sameness — rotate moods (sleepy / focused / rainy / sunset).
 
 ### 3. Batch Generation
-- [ ] Use whichever adapter won the Lofi bake-off in Phase 0 Feature 2 (likely Mubert or Eleven Labs Music for primary; MusicGen-local on the M4 as filler/fallback).
+- [ ] Use the Feature 2 winner: **ACE-Step 1.5 local (primary)**, Stable Audio Open for interlude textures. (Original guess — Mubert/Eleven Labs primary — inverted by cost + licensing reality; see docs/phase0-feature2-decision.md.)
 - [ ] Run `apps/generator` in batch mode: queue 500 tracks (with 20% buffer for rejections).
 - [ ] Each track tagged with metadata: prompt, provider, generation timestamp, license tier.
 - [ ] Store raw outputs in `r2://webplay-library/lofi/raw/`.

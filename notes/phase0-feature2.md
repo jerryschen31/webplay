@@ -1,5 +1,14 @@
 # Phase 0 — Feature 2: Validate AI Generation Pipeline
 
+> **Status 2026-07-17 — substantially complete, decision: GO.**
+> Adapter pattern + CLI + bench harness shipped (PRs #3/#4); ACE-Step
+> 1.5 and Stable Audio Open proven working locally on the M4;
+> ElevenLabs adapter built (blocked on paid plan); Mubert/Suno/Udio
+> parked by owner. See docs/phase0-feature2-decision.md (verdict),
+> docs/provider-licensing.md, docs/cost-model-generation.md,
+> docs/bench-m4-local.md, docs/listening-test.md. Remaining: 280s
+> bench, structured listening test, two licensing confirmations.
+
 ## What This Feature Is
 
 Before investing in any streaming infrastructure, we need hard evidence that we can reliably generate **commercially-licensed, high-quality, 3–4 minute AI music tracks** at the volume and consistency required for a 24/7 radio station. This feature prototypes the **modular adapter pattern** (`generateTrack()`) and benchmarks a wide candidate pool — **commercial APIs** (Suno, Udio, Eleven Labs Music, Mubert, Stable Audio hosted) and **open-source / self-hostable models** (MusicGen, Stable Audio Open, ACE-Step 1.5, Riffusion, YuE) — side-by-side. We also evaluate running open-source generators **locally on the operator's MacBook M4 (16GB unified memory)** as a zero-marginal-cost path that doubles as the ultimate insurance against API fragmentation. The output is a go/no-go decision on which 2–3 providers form the V1 stack and whether local generation is viable for ongoing replenishment.
