@@ -100,7 +100,8 @@ describe("LocalPythonAdapter", () => {
     });
     expect(seenPrompt).toContain("in C Major");
     expect(seenPrompt).toContain("75 BPM");
-    expect(seenPrompt).toContain("upright bass on the downbeat");
+    expect(seenPrompt).toContain("warm dusty Rhodes piano");
+    expect(seenPrompt).toContain("cassette wow and flutter");
   });
 
   it("caption prefers an explicit BPM range over the profile default", async () => {
