@@ -47,7 +47,7 @@ export function ChannelShell() {
             textShadow: "0 1px 8px rgba(0,0,0,0.5)",
           }}
         >
-          {channel.tagline} — AI radio, always on.
+          AI radio, always on.
         </p>
         <select
           aria-label="Channel"
