@@ -31,7 +31,9 @@ export function AudioPlayer() {
     if (!audio) return;
     const onEnded = () => {
       audio.currentTime = 0;
-      void audio.play();
+      // If the browser blocks the replay (autoplay/visibility policy),
+      // reflect reality in the UI instead of a stale "playing" state.
+      audio.play().catch(() => setPlaying(false));
     };
     audio.addEventListener("ended", onEnded);
     return () => audio.removeEventListener("ended", onEnded);
