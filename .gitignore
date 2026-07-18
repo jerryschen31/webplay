@@ -54,3 +54,6 @@ bench-results/
 
 # runtime caches
 .cache/
+
+# hls builder output
+hls-out/
