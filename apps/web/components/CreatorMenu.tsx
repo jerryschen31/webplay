@@ -25,14 +25,12 @@ export function CreatorMenu() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: "5px",
-          width: "2.75rem",
-          height: "2.75rem",
-          padding: "0 0.7rem",
-          borderRadius: "999px",
-          border: "1px solid rgba(255,255,255,0.4)",
-          background: "rgba(255,255,255,0.12)",
-          backdropFilter: "blur(6px)",
+          gap: "6px",
+          width: "2.25rem",
+          height: "2.25rem",
+          padding: 0,
+          border: "none",
+          background: "none",
           cursor: "pointer",
         }}
       >
@@ -41,9 +39,10 @@ export function CreatorMenu() {
             key={line}
             style={{
               display: "block",
-              height: "2px",
+              height: "2.5px",
               borderRadius: "1px",
               background: "#fff",
+              boxShadow: "0 1px 6px rgba(0,0,0,0.4)",
             }}
           />
         ))}
