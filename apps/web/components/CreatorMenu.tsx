@@ -24,8 +24,9 @@ export function CreatorMenu() {
           zIndex: 3,
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
           justifyContent: "center",
-          gap: "6px",
+          gap: "5px",
           width: "2.25rem",
           height: "2.25rem",
           padding: 0,
@@ -39,10 +40,11 @@ export function CreatorMenu() {
             key={line}
             style={{
               display: "block",
-              height: "2.5px",
+              width: "1.125rem",
+              height: "1.5px",
               borderRadius: "1px",
-              background: "#fff",
-              boxShadow: "0 1px 6px rgba(0,0,0,0.4)",
+              background: "rgba(232, 228, 222, 0.75)",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
             }}
           />
         ))}
