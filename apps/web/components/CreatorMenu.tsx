@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 const LINKS = [
-  { label: "Github", href: "https://github.com/jerryschen31" },
+  { label: "GitHub", href: "https://github.com/jerryschen31" },
   { label: "Buy me a Coffee", href: "https://buymeacoffee.com/jerryschen7" },
 ];
 

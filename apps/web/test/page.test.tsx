@@ -26,7 +26,7 @@ describe("Home page", () => {
   it("renders the creator menu with external links", () => {
     const html = renderToStaticMarkup(<Home />);
     expect(html).toContain("Created by Jerry Chen");
-    expect(html).toContain("Github");
+    expect(html).toContain("GitHub");
     expect(html).toContain("https://github.com/jerryschen31");
     expect(html).toContain("Buy me a Coffee");
     expect(html).toContain("https://buymeacoffee.com/jerryschen7");

@@ -101,7 +101,7 @@ async function uploadToR2(
   }
   for (const file of files) {
     const body = await readFile(join(outDir, file));
-    const key = encodeURIComponent(`${channel}/${file}`);
+    const key = `${encodeURIComponent(channel)}/${encodeURIComponent(file)}`;
     const contentType = file.endsWith(".m3u8")
       ? "application/vnd.apple.mpegurl"
       : "video/mp2t";
