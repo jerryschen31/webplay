@@ -1,4 +1,5 @@
 import { ChannelShell } from "../components/ChannelShell";
+import { CreatorMenu } from "../components/CreatorMenu";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
         overflow: "hidden",
       }}
     >
+      <CreatorMenu />
       <ChannelShell />
     </main>
   );

@@ -22,4 +22,13 @@ describe("Home page", () => {
     expect(html).not.toContain("Lofi beats for study —");
     expect(html).toContain("lofi-beats-1.jpg");
   });
+
+  it("renders the creator menu with external links", () => {
+    const html = renderToStaticMarkup(<Home />);
+    expect(html).toContain("Created by Jerry Chen");
+    expect(html).toContain("Github");
+    expect(html).toContain("https://github.com/jerryschen31");
+    expect(html).toContain("Buy me a Coffee");
+    expect(html).toContain("https://buymeacoffee.com/jerryschen7");
+  });
 });
