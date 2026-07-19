@@ -1,5 +1,19 @@
 # Phase 1 — Feature 1: Stand Up Liquidsoap Droplet with HLS Output
 
+> **Revision 2026-07-17**:
+> - **New Milestone 0 (do first, no droplet):** pre-render each
+>   channel's rotation offline — ffmpeg `acrossfade` (~3–4s) between
+>   consecutive approved tracks, chop to HLS segments, upload playlist +
+>   segments to R2, serve via the Feature 3 edge Worker. This gets
+>   webplay.io audibly streaming with zero new infrastructure and
+>   de-risks the HLS/Worker/player chain before Liquidsoap exists.
+>   Loses live scheduling only; replaced when the droplet lands.
+> - The R2-scoped API token already works (verified 2026-07-17); create
+>   buckets `webplay-library` and `webplay-stream` when starting this.
+> - Deploy workflow for the droplet config joins `.github/workflows/`
+>   next to the existing ci.yml / deploy-web.yml (base branch flow:
+>   PRs target `build`).
+
 ## What This Feature Is
 
 Provisions the **always-on audio engine** — a small DigitalOcean droplet running **Liquidsoap** that continuously shuffles the Lofi seed library, crossfades tracks, and emits a rolling stream of **4-second HLS .aac segments** plus a `.m3u8` playlist index. These segments are then uploaded to Cloudflare R2 (Phase 1 Feature 3 handles delivery). This droplet is the "private kitchen" — no listener ever connects directly.

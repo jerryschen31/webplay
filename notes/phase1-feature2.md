@@ -1,5 +1,25 @@
 # Phase 1 — Feature 2: Wire Generator Worker → R2 → Liquidsoap Playlist
 
+> **Revision 2026-07-17**:
+> - **The generator worker runs on the M4 (or a future Mac Mini), not
+>   the droplet** — the primary provider is now local ACE-Step, and the
+>   model lives where Apple Silicon lives. The droplet only mixes and
+>   serves; the Mac generates and uploads to R2.
+> - Provider order inverted from the original guess: **ACE-Step local
+>   primary → SAO textures → ElevenLabs optional premium** (see
+>   docs/phase0-feature2-decision.md). Failover is local-first, so
+>   "provider degraded" mostly means machine-busy, not API-down.
+> - Keep the model **resident** between jobs (ACE-Step's `acestep-api`
+>   server or a long-lived Python process): cold start is ~3 min/track,
+>   warm ~40s per 30s audio (docs/bench-m4-local.md).
+> - The publish job MUST refuse tracks with `licenseTerms:
+>   "restricted"` (MusicGen guard — enforced in code, not convention).
+> - BullMQ/Redis is likely overkill for a single-machine V1 — a simple
+>   SQLite/D1-backed job table + cron is enough until multi-channel.
+> - `adapter.isHealthy()` and the bench harness (`pnpm bench`) already
+>   exist from Phase 0 — reuse them for the health-ping and cost-meter
+>   items below.
+
 ## What This Feature Is
 
 Builds the **library replenishment loop**: a scheduled background worker that continuously generates new AI tracks using the adapter from Phase 0 Feature 2, curates them (with a lightweight human-in-the-loop step), pushes approved tracks into Cloudflare R2, and ensures Liquidsoap automatically picks them up on its periodic playlist reload. This is what keeps the channel feeling fresh forever — never the same playlist on a loop.
@@ -13,9 +33,9 @@ Builds the **library replenishment loop**: a scheduled background worker that co
 ## Implementation Steps
 
 ### 1. Generator Worker Architecture
-- [ ] `apps/generator` is a long-running Node process (TypeScript) deployed on the same droplet as Liquidsoap (or a sibling $4 droplet to isolate failures).
-- [ ] Uses `BullMQ` (Redis-backed queue) for job orchestration. Redis can run on the same droplet (1 GB is plenty).
-- [ ] Three queues: `generate`, `master`, `publish`.
+- [ ] `apps/generator` is a long-running Node process (TypeScript) on the **M4 (or future Mac Mini)** — the local models it drives need Apple Silicon; the droplet only mixes/serves (see revision block above).
+- [ ] V1 orchestration: a simple SQLite/D1-backed job table + cron — single machine, no Redis. Revisit BullMQ only if generation spreads across machines.
+- [ ] Three job stages: `generate`, `master`, `publish`.
 
 ### 2. Scheduling
 - [ ] Cron tick every 30 minutes: enqueue N `generate` jobs based on current library depth.
