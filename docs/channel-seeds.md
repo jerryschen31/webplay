@@ -32,3 +32,15 @@ pnpm generate --provider=acestep --genre=<id> --duration=300 --seed=<n> \
 - **Approved candidates for future tracks** (owner: 15s samples "all very
   good, good variety"): 201, 205, 206 — note a seed's 15s render does not
   fully predict its 300s render; re-listen at full length before shipping.
+
+## cafe — "Cafe for Reading"
+
+- **Live rotation**: 302 (300s, 2026-09-12). The approved WAV has a 3s
+  fade-in and 5s fade-out baked in (ffmpeg `afade`, tri curve) so the
+  player's end-of-rotation loop is seamless — a one-track rotation gets no
+  server-side crossfade. The same track (as MP3) doubles as the gamecafe
+  landing-page music.
+- **Candidates rendered at 300s**: 301, 303 (raw renders in
+  `library/cafe/raw/`, gitignored). Picked by librosa fingerprint: 302 had
+  the steadiest loudness envelope (RMS variance 7.6 dB vs 9.0 / 8.7) and the
+  lowest percussive share (15.7% vs 16.4% / 22.6%); all three lock to 81 BPM.

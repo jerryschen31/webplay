@@ -288,6 +288,27 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
       "elegant, sophisticated and relaxed",
     ],
   },
+  cafe: {
+    // Coffee-shop reading music: rhythm-balanced — a light, steady groove
+    // that keeps the room moving without pulling focus from the page.
+    // G Major is bright-but-warm for acoustic guitar; 80 BPM is a relaxed
+    // walking tempo, slower than the jazz lounge and faster than lofi's
+    // head-nod. Acoustic timbres (nylon guitar, piano, upright bass, brushes)
+    // read as "live in a cafe" rather than "produced beat". Positive tags
+    // only (see the sleep caption notes above).
+    keyscale: "G Major",
+    bpm: 80,
+    captionExtras: [
+      "cozy coffee shop background music",
+      "gentle fingerpicked nylon string acoustic guitar",
+      "soft warm piano playing simple mellow chords",
+      "mellow upright bass",
+      "light brushed drums with a gentle steady groove",
+      "quiet unhurried acoustic cafe atmosphere",
+      "warm intimate acoustic recording",
+      "calm, understated and easy to read to",
+    ],
+  },
 };
 
 export function genreProfile(genre: string): GenreProfile | undefined {
