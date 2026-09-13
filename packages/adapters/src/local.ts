@@ -289,24 +289,24 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
     ],
   },
   cafe: {
-    // Coffee-shop reading music: rhythm-balanced — a light, steady groove
-    // that keeps the room moving without pulling focus from the page.
-    // G Major is bright-but-warm for acoustic guitar; 80 BPM is a relaxed
-    // walking tempo, slower than the jazz lounge and faster than lofi's
-    // head-nod. Acoustic timbres (nylon guitar, piano, upright bass, brushes)
-    // read as "live in a cafe" rather than "produced beat". Positive tags
-    // only (see the sleep caption notes above).
+    // Owner's wording (2026-09-12, v2): upbeat morning cafe jazz — lively
+    // with a beat, but not loud enough to distract from reading. The v1
+    // caption (nylon guitar + "quiet unhurried" at 80 BPM) came out darker
+    // and sleepier than wanted. G Major keeps the acoustic timbres bright;
+    // 90 BPM matches the jazz lounge's relaxed-swing pocket. Owner's
+    // "no brass, no vocals" is expressed positively (piano-led acoustic
+    // trio) — negations put the banned word into the caption (see sleep).
     keyscale: "G Major",
-    bpm: 80,
+    bpm: 90,
     captionExtras: [
-      "cozy coffee shop background music",
-      "gentle fingerpicked nylon string acoustic guitar",
-      "soft warm piano playing simple mellow chords",
-      "mellow upright bass",
-      "light brushed drums with a gentle steady groove",
-      "quiet unhurried acoustic cafe atmosphere",
-      "warm intimate acoustic recording",
-      "calm, understated and easy to read to",
+      "upbeat morning cafe jazz",
+      "bright acoustic jazz piano lead",
+      "light swinging brushed drums",
+      "warm walking acoustic bass",
+      "fingerstyle nylon acoustic guitar",
+      "piano-led small acoustic trio",
+      "cheerful and relaxing atmosphere",
+      "sunny coffee shop background music",
     ],
   },
 };

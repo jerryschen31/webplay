@@ -35,12 +35,18 @@ pnpm generate --provider=acestep --genre=<id> --duration=300 --seed=<n> \
 
 ## cafe — "Cafe for Reading"
 
-- **Live rotation**: 302 (300s, 2026-09-12). The approved WAV has a 3s
-  fade-in and 5s fade-out baked in (ffmpeg `afade`, tri curve) so the
-  player's end-of-rotation loop is seamless — a one-track rotation gets no
-  server-side crossfade. The same track (as MP3) doubles as the gamecafe
-  landing-page music.
-- **Candidates rendered at 300s**: 301, 303 (raw renders in
-  `library/cafe/raw/`, gitignored). Picked by librosa fingerprint: 302 had
-  the steadiest loudness envelope (RMS variance 7.6 dB vs 9.0 / 8.7) and the
-  lowest percussive share (15.7% vs 16.4% / 22.6%); all three lock to 81 BPM.
+- **Live rotation (interim)**: 302 (300s, 2026-09-12) — rendered with the
+  *v1* caption (nylon guitar, "quiet unhurried", 80 BPM), which the owner
+  judged too subdued. Not reproducible from the committed v2 profile.
+  The approved WAV has a 3s fade-in and 5s fade-out baked in (ffmpeg
+  `afade`, tri curve) so the player's end-of-rotation loop is seamless — a
+  one-track rotation gets no server-side crossfade. The same track (as MP3)
+  doubles as the gamecafe landing-page music.
+- **v1 candidates** (80 BPM caption, not shipped): 301, 303.
+- **v2 candidates awaiting owner audition** (owner's "upbeat morning cafe
+  jazz" caption, G Major, 90 BPM, 2026-09-12): 304, 305, 306. All three lock
+  to 89 BPM and are much brighter than v1 (spectral centroid ~1300–1600 Hz
+  vs ~650 Hz) with roughly double the percussive share. 304 has the
+  steadiest loudness envelope (RMS variance 5.8 dB) and no slow intro; 305
+  and 306 open a few dB softer for the first 30s; 306 is the brightest and
+  quietest overall.
