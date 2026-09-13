@@ -288,6 +288,27 @@ const GENRE_PROFILES: Record<string, GenreProfile> = {
       "elegant, sophisticated and relaxed",
     ],
   },
+  cafe: {
+    // Owner's wording (2026-09-12, v2): upbeat morning cafe jazz — lively
+    // with a beat, but not loud enough to distract from reading. The v1
+    // caption (nylon guitar + "quiet unhurried" at 80 BPM) came out darker
+    // and sleepier than wanted. G Major keeps the acoustic timbres bright;
+    // 90 BPM matches the jazz lounge's relaxed-swing pocket. Owner's
+    // "no brass, no vocals" is expressed positively (piano-led acoustic
+    // trio) — negations put the banned word into the caption (see sleep).
+    keyscale: "G Major",
+    bpm: 90,
+    captionExtras: [
+      "upbeat morning cafe jazz",
+      "bright acoustic jazz piano lead",
+      "light swinging brushed drums",
+      "warm walking acoustic bass",
+      "fingerstyle nylon acoustic guitar",
+      "piano-led small acoustic trio",
+      "cheerful and relaxing atmosphere",
+      "sunny coffee shop background music",
+    ],
+  },
 };
 
 export function genreProfile(genre: string): GenreProfile | undefined {

@@ -32,3 +32,15 @@ pnpm generate --provider=acestep --genre=<id> --duration=300 --seed=<n> \
 - **Approved candidates for future tracks** (owner: 15s samples "all very
   good, good variety"): 201, 205, 206 — note a seed's 15s render does not
   fully predict its 300s render; re-listen at full length before shipping.
+
+## cafe — "Cafe for Reading"
+
+- **Live rotation**: 304 (300s, 2026-09-12, v2 caption). Owner pick from
+  the v2 auditions. The approved WAV has a 3s fade-in and 5s fade-out baked
+  in (ffmpeg `afade`, tri curve) so the player's end-of-rotation loop is
+  seamless — a one-track rotation gets no server-side crossfade. The same
+  track (as MP3) doubles as the gamecafe landing-page music.
+- **Approved candidates for future tracks** (v2 caption, 300s): 305, 306.
+- **v1 caption** (nylon guitar, "quiet unhurried", 80 BPM — owner: too
+  subdued): 301, 302, 303 rendered; 302 was briefly live on 2026-09-12.
+  Not reproducible from the committed profile.
