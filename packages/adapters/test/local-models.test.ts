@@ -86,6 +86,16 @@ describe("aceStepMusicalArgs", () => {
     expect(args).not.toContain("--guidance-scale");
   });
 
+  it("applies the genre profile's key and BPM for cafe", () => {
+    const args = aceStepMusicalArgs({
+      genre: "cafe",
+      durationSec: 300,
+      instrumental: true,
+    });
+    expect(flag(args, "--keyscale")).toBe("G Major");
+    expect(flag(args, "--bpm")).toBe("90");
+  });
+
   it("emits no key/BPM flags for an unknown genre (model auto-detects)", () => {
     const args = aceStepMusicalArgs({
       genre: "polka",

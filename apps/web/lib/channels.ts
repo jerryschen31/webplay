@@ -26,6 +26,12 @@ export const CHANNELS: Channel[] = [
     streamUrl: "https://stream.webplay.io/stream/jazz/playlist.m3u8",
     background: "/backgrounds/jazz-1.jpg",
   },
+  {
+    id: "cafe",
+    label: "Cafe for Reading",
+    streamUrl: "https://stream.webplay.io/stream/cafe/playlist.m3u8",
+    background: "/backgrounds/coffee-shop-2.jpg",
+  },
 ];
 
 export const DEFAULT_CHANNEL: Channel = LOFI;
