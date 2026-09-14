@@ -129,6 +129,29 @@ describe("LocalPythonAdapter", () => {
     expect(seenPrompt).not.toContain("drums");
   });
 
+  it("enriches the cafe caption with the cafe profile's key, BPM and extras", async () => {
+    const audioFile = join(FIXTURE_DIR, "out.wav");
+    await writeFile(audioFile, "RIFF");
+    let seenPrompt = "";
+    const runner = vi.fn(async (_cmd: string, args: string[]) => {
+      seenPrompt = args[args.indexOf("--prompt") + 1];
+      return {
+        exitCode: 0,
+        stdout: `{"file": "${audioFile}", "durationSec": 30}\n`,
+        stderr: "",
+      };
+    });
+    await adapterWith(runner).generateTrack({
+      genre: "cafe",
+      durationSec: 30,
+      instrumental: true,
+    });
+    expect(seenPrompt).toContain("in G Major");
+    expect(seenPrompt).toContain("90 BPM");
+    expect(seenPrompt).toContain("bright acoustic jazz piano lead");
+    expect(seenPrompt).toContain("sunny coffee shop background music");
+  });
+
   it("caption prefers an explicit BPM range over the profile default", async () => {
     const audioFile = join(FIXTURE_DIR, "out.wav");
     await writeFile(audioFile, "RIFF");

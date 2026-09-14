@@ -71,6 +71,7 @@ export function ChannelShell() {
             appearance: "none",
             WebkitAppearance: "none",
             textAlign: "center",
+            textAlignLast: "center",
           }}
         >
           {CHANNELS.map((c) => (
